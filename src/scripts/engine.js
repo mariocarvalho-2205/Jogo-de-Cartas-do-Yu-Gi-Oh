@@ -56,6 +56,14 @@ const cardData = [
 },
 ]
 
+async function getRandomCardId() {
+    const randomIndex = Math.floor(Math.random() * cardData.length)
+}
+
+async function createCardImage(randomIdCard, fieldSide) {
+
+}
+
 async function drawCards(cardsNumber, fieldSide) {
     for (let i = 0; i < cardsNumber; i++) {
         const randomIdCard = await getRandomCardId();
