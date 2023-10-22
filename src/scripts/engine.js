@@ -84,6 +84,8 @@ async function createCardImage(idCard, fieldSide) {
     return cardImage
 }
 
+// Criar funcão para setCardFields
+
 async function drawSelectCard(index) {
     state.cardsSprites.avatar.src = cardData[index].img;
     state.cardsSprites.name.innerText = cardData[index].name;
