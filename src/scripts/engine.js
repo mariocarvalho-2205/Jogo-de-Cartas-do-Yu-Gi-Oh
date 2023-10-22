@@ -23,11 +23,11 @@ const state = {
 // Enumeração das cartas -
 
 const playerSides = {
-    player1: "player-field-card",
-    computer: "computer-field-card"
+    player1: "player-cards",
+    computer: "computer-cards"
 }
 
-const pathImages = ".src/assets/icons/";
+const pathImages = "./src/assets/icons/";
 
 const cardData = [
 {
@@ -57,10 +57,37 @@ const cardData = [
 ]
 
 async function getRandomCardId() {
-    const randomIndex = Math.floor(Math.random() * cardData.length)
+    const randomIndex = Math.floor(Math.random() * cardData.length);
+    return cardData[randomIndex].id;
 }
 
-async function createCardImage(randomIdCard, fieldSide) {
+async function createCardImage(idCard, fieldSide) {
+    const cardImage = document.createElement('img');
+    cardImage.setAttribute('height', '100px');
+    cardImage.setAttribute('src', './src/assets/icons/card-back.png');
+    cardImage.setAttribute('data-id', idCard);
+    cardImage.classList.add('card');
+
+    if (fieldSide === playerSides.player1) {
+        
+        cardImage.addEventListener('mouseover', () => {
+            drawSelectCard(idCard);
+        })
+        
+        cardImage.addEventListener('click', () => {
+            setcardsField(cardImage.getAttribute('data-id'))
+        })
+        
+    }
+
+
+    return cardImage
+}
+
+async function drawSelectCard(index) {
+    state.cardsSprites.avatar.src = cardData[index].img;
+    state.cardsSprites.name.innerText = cardData[index].name;
+    state.cardsSprites.type.innerText = 'Attribute: ' + cardData[index].type;
 
 }
 
