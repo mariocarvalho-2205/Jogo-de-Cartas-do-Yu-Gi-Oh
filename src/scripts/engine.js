@@ -3,7 +3,7 @@ const state = {
     score: {
         playerScore: 0,
         computerScore: 0,
-        scoreBox: document.getElementById('score-points')
+        scoreBox: document.getElementById('score_points')
     },
     cardsSprites: {
         avatar: document.getElementById('card-image'),
@@ -15,6 +15,12 @@ const state = {
         player: document.getElementById('player-field-card'),
         computer: document.getElementById('computer-field-card'),
     },
+    playerSides: {
+        player1: "player-cards",
+        player1BOX: document.querySelector("#player-cards"),
+        computer: "computer-cards",
+        computerBOX: document.querySelector('#computer-cards'),
+    },
     actions: {
         button: document.getElementById('next-duel'),
     }
@@ -22,10 +28,7 @@ const state = {
 
 // Enumeração das cartas -
 
-const playerSides = {
-    player1: "player-cards",
-    computer: "computer-cards"
-}
+
 
 const pathImages = "./src/assets/icons/";
 
@@ -68,20 +71,82 @@ async function createCardImage(idCard, fieldSide) {
     cardImage.setAttribute('data-id', idCard);
     cardImage.classList.add('card');
 
-    if (fieldSide === playerSides.player1) {
+    if (fieldSide === state.playerSides.player1) {
         
         cardImage.addEventListener('mouseover', () => {
             drawSelectCard(idCard);
         })
         
         cardImage.addEventListener('click', () => {
-            setcardsField(cardImage.getAttribute('data-id'))
+            setCardsField(cardImage.getAttribute('data-id'))
         })
         
     }
 
-
     return cardImage
+}
+
+// funcção para setar a carta do oponente
+
+async function setCardsField(cardId) {
+
+    await removeAllCards()
+
+    let computerCardId = await getRandomCardId();
+
+    ShowHiddenCardFieldsImages(true)
+
+    
+    let duelResults = await checkDuelResults(cardId, computerCardId);
+
+    await updateScore();
+    await drawButton(duelResults);
+    await drawCardsInField(cardId, computerCardId)
+}
+
+async function drawCardsInField(cardId, computerCardId) {
+    state.fieldCards.player.src = cardData[cardId].img;
+    state.fieldCards.computer.src = cardData[computerCardId].img;
+
+}
+
+async function updateScore () {
+    state.score.scoreBox.innerText = `Win: ${state.score.playerScore} | Lose: ${state.score.computerScore}`
+}
+
+async function drawButton (text) {
+    state.actions.button.innerText = text.toUpperCase();
+    state.actions.button.style.display = 'block';
+}
+
+async function checkDuelResults (playerCardId, computerCardId) {
+    let duelResults = 'Empate';
+
+    let playerCard = cardData[playerCardId]
+
+    if (playerCard.winOf.includes(computerCardId)) {
+        duelResults = 'Win';
+        // await playAudio(duelResults)
+        state.score.playerScore++;
+    };
+
+    if (playerCard.loseOf.includes(computerCardId)) {
+        duelResults = 'Lose'
+        state.score.computerScore++;
+    }
+
+    await playAudio(duelResults);
+    return duelResults
+}
+
+async function removeAllCards() {
+    let { computerBOX, player1BOX } = state.playerSides;    
+
+    let imgElements = computerBOX.querySelectorAll('img');
+    imgElements.forEach((img) => img.remove())
+
+    imgElements = player1BOX.querySelectorAll("img");
+    imgElements.forEach((img) => img.remove());
 }
 
 // Criar funcão para setCardFields
@@ -102,11 +167,56 @@ async function drawCards(cardsNumber, fieldSide) {
     }
 }
 
+async function ShowHiddenCardFieldsImages(value) {
+    if (value === true) {
+        state.fieldCards.player.style.display = "block";
+        state.fieldCards.computer.style.display = "block";
+    }
+
+    if (value === false) {
+        state.fieldCards.player.style.display = "none";
+        state.fieldCards.computer.style.display = "none";
+    }
+}
+
+async function hiddenCardDetails () {
+    state.cardsSprites.name.innerText = "selecione";
+    state.cardsSprites.type.innerText = "uma carta";
+    state.cardsSprites.avatar.src = "";
+}
+
+async function resetDuel() {
+    state.cardsSprites.avatar.src = '';
+    state.actions.button.style.display = "none";
+    
+    await hiddenCardDetails()
+
+    await ShowHiddenCardFieldsImages(false)
+    
+    init()
+
+}
+
+async function playAudio(status) {
+    const audio = new Audio(`./src/assets/audios/${status}.wav`)
+
+    try {
+        audio.play()
+    } catch (error) {
+
+    }
+    
+
+}
 
 // Função de Start
 function init () {
-    drawCards(5, playerSides.player1)
-    drawCards(5, playerSides.computer)
+
+    drawCards(5, state.playerSides.player1)
+    drawCards(5, state.playerSides.computer)
+
+    const bgm = document.getElementById('bgm')
+    // bgm.play()
 }
 
 init ();
