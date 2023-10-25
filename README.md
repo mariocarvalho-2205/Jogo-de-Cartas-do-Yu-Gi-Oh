@@ -11,6 +11,7 @@
 ###
 
 <p align="left">Esse jogo foi criado como trabalho do Bootcamp da DIO, como forma de aprendizado e conclusão.</p>
+<a align="left" href="https://mariocarvalho-2205.github.io/Jogo-de-Cartas-do-Yu-Gi-Oh/" target="_blank">Confere o projeto aqui</a>
 
 ###
 
